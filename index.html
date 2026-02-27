@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>個人化精準保健戰略指南</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans TC', sans-serif;
+            background-color: #fdfbf7; /* Warm Neutral Background */
+            color: #4a4a4a;
+        }
+
+        /* Chart Container Styling - Mandatory Strict Constraints */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 350px;
+        }
+
+        /* Custom Scrollbar for cleaner look */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 24px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: #e2e8f0;
+            z-index: 0;
+        }
+
+        .step-card {
+            transition: all 0.3s ease;
+        }
+        .step-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .step-card.active {
+            border-left-width: 4px;
+        }
+    </style>
+    <!-- Chosen Palette: Warm Neutrals (Background) + Sage Green (Route A) + Slate Blue (Route B) -->
+    <!-- Application Structure Plan: 
+         1. Header: Context setting.
+         2. Strategy Control Center: Top-level tabs to switch between Route A and Route B. This controls the entire state of the page.
+         3. Split View:
+            - Left Column: Interactive Timeline. Users click steps to see details. This linear format matches the chronological nature of the report.
+            - Right Column: Dynamic Data Visualization (Radar Chart) to show the "Strategic Focus" of the selected route, plus a Detail Panel for the selected timeline step.
+         4. Summary Matrix: A quick-glance table for rapid reference at the bottom.
+         Why? The user needs to understand *when* to take what, but more importantly *why*. The interactive timeline connects the action (taking a pill) with the strategy (biological mechanism).
+    -->
+    <!-- Visualization & Content Choices:
+         1. Radar Chart (Chart.js): Goal: Compare. Viz: Radar. Justification: To visually distinct the strategic focus (e.g., Metabolism vs. Inflammation) of the two routes.
+         2. Interactive Timeline (HTML/JS): Goal: Organize/Change. Viz: Vertical Steps. Justification: Best for showing chronological sequences. Clicking updates the side panel.
+         3. Dynamic Detail Panel (JS Text): Goal: Inform. Viz: Card. Justification: Shows complex text (purpose/mechanism) only when relevant to reduce clutter.
+         4. Status Badges (HTML/Tailwind): Goal: Inform. Viz: Colored tags. Justification: Quick ID of timing (Empty Stomach vs With Meal).
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+</head>
+<body class="antialiased min-h-screen flex flex-col">
+
+    <!-- Header Section -->
+    <header class="bg-white shadow-sm border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            <h1 class="text-2xl font-bold text-slate-800 tracking-tight">
+                <i class="fa-solid fa-dna text-teal-600 mr-2"></i>個人化精準保健戰略指南
+            </h1>
+            <p class="mt-2 text-sm text-gray-500 max-w-3xl">
+                本互動儀表板旨在協助您執行精準的保健品服用計劃。請選擇下方的「戰略路線」以查看當日的執行細節、生化機制目標與戰略雷達圖。
+            </p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        
+        <!-- Route Selector (Strategic Control) -->
+        <section class="mb-8">
+            <div class="bg-white rounded-xl shadow-sm p-1 inline-flex w-full sm:w-auto border border-gray-200">
+                <button id="btn-route-a" onclick="switchRoute('A')" class="flex-1 sm:flex-none px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 focus:outline-none ring-offset-2 focus:ring-2 ring-emerald-500 text-gray-600 hover:bg-gray-50">
+                    <i class="fa-solid fa-leaf"></i>
+                    路線 A：代謝干擾與防護
+                </button>
+                <button id="btn-route-b" onclick="switchRoute('B')" class="flex-1 sm:flex-none px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 focus:outline-none ring-offset-2 focus:ring-2 ring-blue-500 text-gray-600 hover:bg-gray-50">
+                    <i class="fa-solid fa-shield-virus"></i>
+                    路線 B：抗缺氧與抗血管新生
+                </button>
+            </div>
+            
+            <!-- Context Block for Selected Route -->
+            <div class="mt-4 bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+                <h2 class="text-lg font-semibold text-gray-800 mb-2">戰略總結</h2>
+                <p id="route-description" class="text-gray-600 leading-relaxed">
+                    <!-- Dynamic Content -->
+                </p>
+                <div class="mt-4 flex flex-wrap gap-2" id="route-tags">
+                    <!-- Dynamic Tags -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- Left Column: Timeline (Interactive) -->
+            <div class="lg:col-span-7">
+                <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                    <i class="fa-regular fa-clock mr-2 text-gray-400"></i>
+                    執行時間軸
+                </h3>
+                <p class="text-sm text-gray-500 mb-6">點擊下方時間點可查看詳細服用目的與生化機轉。</p>
+                
+                <div class="relative pl-2" id="timeline-container">
+                    <div class="timeline-line"></div>
+                    <!-- Timeline Steps will be injected here -->
+                </div>
+            </div>
+
+            <!-- Right Column: Visualization & Details -->
+            <div class="lg:col-span-5 flex flex-col gap-6">
+                
+                <!-- Chart Section -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                    <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wide mb-4">
+                        戰略雷達分析
+                    </h3>
+                    <p class="text-xs text-gray-400 mb-2">本圖表展示當前路線在不同生理調節層面的權重分佈。</p>
+                    <div class="chart-container">
+                        <canvas id="radarChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Dynamic Detail Panel (Sticky-ish) -->
+                <div id="detail-panel" class="bg-slate-50 border border-slate-200 p-6 rounded-xl shadow-sm transition-all duration-300 opacity-0 transform translate-y-4">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex items-center gap-3">
+                            <div id="detail-icon" class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm text-lg">
+                                <!-- Icon -->
+                            </div>
+                            <div>
+                                <h4 id="detail-title" class="font-bold text-gray-800 text-lg">
+                                    <!-- Dynamic Title -->
+                                </h4>
+                                <span id="detail-time" class="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    <!-- Dynamic Time -->
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <h5 class="text-xs font-bold text-gray-400 uppercase mb-1">服用目的</h5>
+                            <p id="detail-purpose" class="text-gray-700 text-sm leading-relaxed">
+                                <!-- Dynamic Purpose -->
+                            </p>
+                        </div>
+                        <div class="bg-white p-3 rounded-lg border border-gray-100">
+                            <h5 class="text-xs font-bold text-indigo-500 uppercase mb-1">
+                                <i class="fa-solid fa-microchip mr-1"></i>生化戰略機制
+                            </h5>
+                            <p id="detail-mechanism" class="text-gray-600 text-sm">
+                                <!-- Dynamic Mechanism -->
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Bottom: Summary Table -->
+        <section class="mt-12 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                <h3 class="text-lg font-semibold text-gray-800">快速對照清單</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">時段</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">狀態</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">補充品項</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">關鍵字</th>
+                        </tr>
+                    </thead>
+                    <tbody id="summary-table-body" class="bg-white divide-y divide-gray-200">
+                        <!-- Dynamic Rows -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-12 py-8">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p class="text-sm text-gray-400">
+                此互動指南僅供參考，請務必遵照專業醫師與藥師的即時建議調整。
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Data Definitions ---
+        const data = {
+            A: {
+                id: 'A',
+                title: "路線 A：【代謝干擾與防護日】",
+                themeColor: "emerald", // Tailwind color name basis
+                description: "此路線的核心在於調節細胞能量代謝（AMPK），阻斷腫瘤的能量供應，同時兼顧貧血護理與腸道菌相的維護。重點在於與藥物的交互作用管理。",
+                radarData: [90, 40, 85, 80, 50], // Metabolic, Anti-Hypoxia, Gut Health, Vascular/Blood, Anti-Inflammatory
+                tags: ["AMPK 激活", "血管新生抑制", "貧血保護", "腸道菌相"],
+                steps: [
+                    {
+                        time: "01. 出門前",
+                        condition: "空腹",
+                        item: "乳酸菌",
+                        icon: "fa-bacteria",
+                        purpose: "趁胃酸較低且無食物干擾時，讓益生菌安全抵達腸道定殖。",
+                        mechanism: "建立優勢菌叢，調節免疫微環境。",
+                        color: "bg-emerald-100 text-emerald-700"
+                    },
+                    {
+                        time: "02. 到公司早餐",
+                        condition: "隨餐",
+                        item: "小檗鹼 (Berberine)",
+                        icon: "fa-utensils",
+                        purpose: "與乳酸菌錯開 40 分鐘避免殺菌；隨餐吃不傷胃。",
+                        mechanism: "啟動 AMPK 代謝開關，並為晚上的 Lipanthyl 爭取 10 小時代謝緩衝期，避免 CYP 酵素競爭，保護肝臟。",
+                        color: "bg-emerald-100 text-emerald-700"
+                    },
+                    {
+                        time: "03. 午餐",
+                        condition: "飯後",
+                        item: "EGCG (綠茶萃取)",
+                        icon: "fa-mug-hot",
+                        purpose: "飯後吃避開純化綠茶萃取物的肝毒性風險。",
+                        mechanism: "利用午餐肉類較多時，溫和螯合多餘鐵質（保護地中海型貧血），同時抗血管新生。",
+                        color: "bg-emerald-100 text-emerald-700"
+                    },
+                    {
+                        time: "04. 晚餐",
+                        condition: "隨餐",
+                        item: "Lipanthyl (降脂處方藥)",
+                        icon: "fa-pills",
+                        purpose: "此時肝臟解毒通道 (CYP) 已淨空，專心代謝西藥。",
+                        mechanism: "零塞車風險，確保藥物療效並降低交互作用副作用。",
+                        color: "bg-emerald-50 text-emerald-600 border-emerald-200"
+                    }
+                ]
+            },
+            B: {
+                id: 'B',
+                title: "路線 B：【抗缺氧與抗血管新生日】",
+                themeColor: "blue",
+                description: "此路線聚焦於改變腫瘤微環境，特別是針對缺氧誘導因子 (HIF-1α) 的降解與全身性抗發炎，維護血管彈性。",
+                radarData: [50, 95, 85, 60, 90], // Metabolic, Anti-Hypoxia, Gut Health, Vascular/Blood, Anti-Inflammatory
+                tags: ["HIF-1α 降解", "抗發炎", "SIRT1 啟動", "血管彈性"],
+                steps: [
+                    {
+                        time: "01. 出門前",
+                        condition: "空腹",
+                        item: "乳酸菌",
+                        icon: "fa-bacteria",
+                        purpose: "先讓益生菌去腸道卡位，準備迎接接下來的十字花科協同作用。",
+                        mechanism: "腸道菌群預備。",
+                        color: "bg-blue-100 text-blue-700"
+                    },
+                    {
+                        time: "02. 早餐",
+                        condition: "隨餐",
+                        item: "十字花科 ＋ 白藜蘆醇",
+                        icon: "fa-carrot",
+                        purpose: "乳酸菌協助轉化十字花科為高活性的「蘿蔔硫素」。",
+                        mechanism: "白藜蘆醇同步啟動 SIRT1 長壽基因，雙管齊下破壞腫瘤的缺氧引擎 (HIF-1α)。",
+                        color: "bg-blue-100 text-blue-700"
+                    },
+                    {
+                        time: "03. 午餐",
+                        condition: "隨餐",
+                        item: "Longvida 薑黃素",
+                        icon: "fa-capsules",
+                        purpose: "脂溶性高吸收薑黃素，隨午餐油脂吸收最好。",
+                        mechanism: "強效抗發炎 (Anti-inflammation)，在下午時段發揮最大抗氧化保護。",
+                        color: "bg-blue-100 text-blue-700"
+                    },
+                    {
+                        time: "04. 晚餐",
+                        condition: "隨餐",
+                        item: "Lipanthyl (降脂處方藥)",
+                        icon: "fa-pills",
+                        purpose: "夜間專心處理降脂藥。",
+                        mechanism: "維持規律用藥，肝臟代謝負擔最小化。",
+                        color: "bg-blue-50 text-blue-600 border-blue-200"
+                    }
+                ]
+            }
+        };
+
+        const radarLabels = ['能量代謝調節 (AMPK)', '抗缺氧能力 (HIF-1α)', '腸道健康', '血液/血管保護', '抗發炎/抗氧化'];
+
+        // --- State Management ---
+        let currentRoute = 'A';
+        let chartInstance = null;
+
+        // --- DOM Elements ---
+        const els = {
+            btnA: document.getElementById('btn-route-a'),
+            btnB: document.getElementById('btn-route-b'),
+            desc: document.getElementById('route-description'),
+            tags: document.getElementById('route-tags'),
+            timeline: document.getElementById('timeline-container'),
+            summaryBody: document.getElementById('summary-table-body'),
+            detailPanel: document.getElementById('detail-panel'),
+            dIcon: document.getElementById('detail-icon'),
+            dTitle: document.getElementById('detail-title'),
+            dTime: document.getElementById('detail-time'),
+            dPurpose: document.getElementById('detail-purpose'),
+            dMech: document.getElementById('detail-mechanism')
+        };
+
+        // --- Initialization ---
+        function init() {
+            renderRoute(currentRoute);
+            // Show first step details by default
+            showDetails(data[currentRoute].steps[0], 0);
+        }
+
+        // --- Core Logic ---
+        function switchRoute(routeId) {
+            if (currentRoute === routeId) return;
+            currentRoute = routeId;
+            renderRoute(routeId);
+        }
+
+        function renderRoute(routeId) {
+            const routeData = data[routeId];
+            const isA = routeId === 'A';
+
+            // 1. Update Buttons Styling
+            if (isA) {
+                els.btnA.className = "flex-1 sm:flex-none px-6 py-3 rounded-lg text-sm font-bold shadow-md transition-all duration-200 flex items-center justify-center gap-2 focus:outline-none ring-offset-2 focus:ring-2 ring-emerald-500 bg-emerald-600 text-white";
+                els.btnB.className = "flex-1 sm:flex-none px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 focus:outline-none ring-offset-2 focus:ring-2 ring-blue-500 text-gray-600 hover:bg-gray-100 bg-white border border-gray-200";
+            } else {
+                els.btnA.className = "flex-1 sm:flex-none px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 focus:outline-none ring-offset-2 focus:ring-2 ring-emerald-500 text-gray-600 hover:bg-gray-100 bg-white border border-gray-200";
+                els.btnB.className = "flex-1 sm:flex-none px-6 py-3 rounded-lg text-sm font-bold shadow-md transition-all duration-200 flex items-center justify-center gap-2 focus:outline-none ring-offset-2 focus:ring-2 ring-blue-500 bg-blue-600 text-white";
+            }
+
+            // 2. Update Description & Tags
+            els.desc.textContent = routeData.description;
+            els.tags.innerHTML = routeData.tags.map(tag => 
+                `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${isA ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800'}">#${tag}</span>`
+            ).join('');
+
+            // 3. Update Chart
+            updateChart(routeData);
+
+            // 4. Build Timeline
+            renderTimeline(routeData);
+
+            // 5. Build Summary Table
+            renderTable(routeData);
+
+            // 6. Reset Detail Panel to first item
+            showDetails(routeData.steps[0], 0);
+        }
+
+        function renderTimeline(routeData) {
+            // Clear existing except the line
+            const line = els.timeline.querySelector('.timeline-line');
+            els.timeline.innerHTML = '';
+            els.timeline.appendChild(line);
+
+            routeData.steps.forEach((step, index) => {
+                const isActive = index === 0; // Default first active
+                const stepEl = document.createElement('div');
+                stepEl.className = `step-card relative pl-10 py-2 mb-4 cursor-pointer group`;
+                stepEl.onclick = () => showDetails(step, index);
+
+                // Dot on line
+                const dotColor = routeData.id === 'A' ? 'bg-emerald-500' : 'bg-blue-500';
+                stepEl.innerHTML = `
+                    <div class="absolute left-[20px] top-6 w-3 h-3 rounded-full ${dotColor} border-2 border-white shadow transform -translate-x-1/2 z-10 transition-transform group-hover:scale-125"></div>
+                    <div class="bg-white p-4 rounded-lg border border-gray-100 shadow-sm group-hover:border-${routeData.themeColor}-300 transition-colors" id="step-card-${index}">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="text-xs font-bold text-gray-400 uppercase tracking-wide">${step.time}</span>
+                                <h4 class="text-md font-bold text-gray-800 mt-1">${step.item}</h4>
+                            </div>
+                            <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium ${step.color}">
+                                ${step.condition}
+                            </span>
+                        </div>
+                    </div>
+                `;
+                els.timeline.appendChild(stepEl);
+            });
+        }
+
+        function showDetails(step, index) {
+            // UI Update for Timeline Selection
+            document.querySelectorAll('.step-card > div:nth-child(2)').forEach((el, i) => {
+                if (i === index) {
+                    el.classList.add('ring-2', currentRoute === 'A' ? 'ring-emerald-400' : 'ring-blue-400');
+                } else {
+                    el.classList.remove('ring-2', 'ring-emerald-400', 'ring-blue-400');
+                }
+            });
+
+            // Animate Panel Entry
+            els.detailPanel.classList.remove('opacity-0', 'translate-y-4');
+            els.detailPanel.classList.add('opacity-100', 'translate-y-0');
+
+            // Populate Content
+            const themeText = currentRoute === 'A' ? 'text-emerald-600' : 'text-blue-600';
+            els.dIcon.innerHTML = `<i class="fa-solid ${step.icon} ${themeText}"></i>`;
+            els.dTitle.textContent = step.item;
+            els.dTime.textContent = `${step.time} • ${step.condition}`;
+            els.dPurpose.textContent = step.purpose;
+            els.dMech.textContent = step.mechanism;
+        }
+
+        function renderTable(routeData) {
+            els.summaryBody.innerHTML = routeData.steps.map(step => `
+                <tr class="hover:bg-gray-50 transition-colors">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${step.time}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                         <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${step.color}">
+                            ${step.condition}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${step.item}</td>
+                    <td class="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">${step.mechanism}</td>
+                </tr>
+            `).join('');
+        }
+
+        function updateChart(routeData) {
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            
+            const color = routeData.id === 'A' ? '16, 185, 129' : '59, 130, 246'; // Emerald vs Blue RGB
+
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: radarLabels,
+                    datasets: [{
+                        label: routeData.title,
+                        data: routeData.radarData,
+                        fill: true,
+                        backgroundColor: `rgba(${color}, 0.2)`,
+                        borderColor: `rgba(${color}, 1)`,
+                        pointBackgroundColor: `rgba(${color}, 1)`,
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: `rgba(${color}, 1)`
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: {
+                                color: '#f3f4f6'
+                            },
+                            grid: {
+                                color: '#e5e7eb'
+                            },
+                            pointLabels: {
+                                font: {
+                                    size: 11,
+                                    family: "'Noto Sans TC', sans-serif"
+                                },
+                                color: '#6b7280'
+                            },
+                            suggestedMin: 0,
+                            suggestedMax: 100,
+                            ticks: {
+                                display: false // Hide numbers for cleaner look
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                            titleColor: '#1f2937',
+                            bodyColor: '#4b5563',
+                            borderColor: '#e5e7eb',
+                            borderWidth: 1,
+                            padding: 10,
+                            displayColors: true,
+                            boxPadding: 4
+                        }
+                    }
+                }
+            });
+        }
+
+        // Boot
+        window.addEventListener('DOMContentLoaded', init);
+
+    </script>
+</body>
+</html>
