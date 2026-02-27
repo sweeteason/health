@@ -75,11 +75,16 @@
 
     <header class="bg-white shadow-sm border-b border-gray-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <h1 class="text-2xl font-bold text-slate-800 tracking-tight">
-                <i class="fa-solid fa-dna text-teal-600 mr-2"></i>個人化精準保健戰略指南
-            </h1>
+            <div class="flex justify-between items-start sm:items-center flex-col sm:flex-row gap-4">
+                <h1 class="text-2xl font-bold text-slate-800 tracking-tight">
+                    <i class="fa-solid fa-dna text-teal-600 mr-2"></i>個人化精準保健戰略指南
+                </h1>
+                <div id="today-badge" class="bg-indigo-50 text-indigo-700 px-4 py-2 rounded-lg text-sm font-bold border border-indigo-100 flex items-center shadow-sm">
+                    <i class="fa-regular fa-calendar-check mr-2"></i>今天星期的載入中...
+                </div>
+            </div>
             <p class="mt-2 text-sm text-gray-500 max-w-3xl">
-                本互動儀表板旨在協助您執行精準的保健品服用計劃。請選擇下方的「戰略路線」以查看當日的執行細節、生化機制目標與戰略雷達圖。
+                系統已根據今日星期為您自動載入應執行的戰略路線。您也可點擊下方標籤查看其他日期的計劃。
             </p>
         </div>
     </header>
@@ -87,14 +92,18 @@
     <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         
         <section class="mb-8">
-            <div class="bg-white rounded-xl shadow-sm p-1 inline-flex w-full sm:w-auto border border-gray-200 flex-col sm:flex-row gap-1">
-                <button id="btn-route-a" onclick="switchRoute('A')" class="flex-1 sm:flex-none px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 focus:outline-none ring-offset-2 focus:ring-2 ring-emerald-500 text-gray-600 hover:bg-gray-50">
+            <div class="bg-white rounded-xl shadow-sm p-1 inline-flex w-full md:w-auto border border-gray-200 flex-col md:flex-row gap-1">
+                <button id="btn-route-a" onclick="switchRoute('A')" class="flex-1 md:flex-none px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 focus:outline-none ring-offset-2 focus:ring-2 ring-emerald-500 text-gray-600 hover:bg-gray-50">
                     <i class="fa-solid fa-leaf"></i>
-                    路線 A：代謝干擾日 (小檗鹼+EGCG)
+                    路線 A (一/三/五)
                 </button>
-                <button id="btn-route-b" onclick="switchRoute('B')" class="flex-1 sm:flex-none px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 focus:outline-none ring-offset-2 focus:ring-2 ring-blue-500 text-gray-600 hover:bg-gray-50">
+                <button id="btn-route-b" onclick="switchRoute('B')" class="flex-1 md:flex-none px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 focus:outline-none ring-offset-2 focus:ring-2 ring-blue-500 text-gray-600 hover:bg-gray-50">
                     <i class="fa-solid fa-shield-virus"></i>
-                    路線 B：抗缺氧日 (十字花科+薑黃素)
+                    路線 B (二/四/六)
+                </button>
+                <button id="btn-route-c" onclick="switchRoute('C')" class="flex-1 md:flex-none px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 focus:outline-none ring-offset-2 focus:ring-2 ring-purple-500 text-gray-600 hover:bg-gray-50">
+                    <i class="fa-solid fa-bed"></i>
+                    休息日 (週日)
                 </button>
             </div>
             
@@ -201,7 +210,7 @@
         const data = {
             A: {
                 id: 'A',
-                title: "路線 A：【代謝干擾日】",
+                title: "路線 A：【代謝干擾日】 (週一、三、五)",
                 themeColor: "emerald", // Tailwind color name basis
                 description: "主攻小檗鹼與 EGCG，核心在於調節細胞能量代謝（AMPK），切斷腫瘤能量供應，同時兼顧貧血護理與血管新生抑制。",
                 radarData: [90, 40, 85, 80, 50], // Metabolic, Anti-Hypoxia, Gut Health, Vascular/Blood, Anti-Inflammatory
@@ -247,7 +256,7 @@
             },
             B: {
                 id: 'B',
-                title: "路線 B：【抗缺氧日】",
+                title: "路線 B：【抗缺氧日】 (週二、四、六)",
                 themeColor: "blue",
                 description: "主攻十字花科與薑黃素，聚焦於改變腫瘤微環境，降解缺氧誘導因子 (HIF-1α) 並提供強力全身性抗發炎。",
                 radarData: [50, 95, 85, 60, 90], // Metabolic, Anti-Hypoxia, Gut Health, Vascular/Blood, Anti-Inflammatory
@@ -290,6 +299,25 @@
                         color: "bg-blue-50 text-blue-600 border-blue-200"
                     }
                 ]
+            },
+            C: {
+                id: 'C',
+                title: "路線 C：【週末休息日】 (週日)",
+                themeColor: "purple",
+                description: "今日為臟器休息日，暫停所有營養補充品，讓肝腎獲得充分休息，僅保留必要的處方藥物。",
+                radarData: [20, 20, 40, 60, 20], // Low metabolic load
+                tags: ["肝腎修復", "藥物專一性", "微環境重置"],
+                steps: [
+                    {
+                        time: "18:00",
+                        condition: "晚餐 / 隨餐",
+                        item: "1 顆 Lipanthyl (降血脂西藥)",
+                        icon: "fa-pills",
+                        purpose: "維持必須的處方藥物治療。",
+                        mechanism: "無其他保健品干擾，讓肝臟 (CYP 酵素群) 單純處理西藥，身體其餘系統進入休養狀態。",
+                        color: "bg-purple-100 text-purple-700"
+                    }
+                ]
             }
         };
 
@@ -303,6 +331,7 @@
         const els = {
             btnA: document.getElementById('btn-route-a'),
             btnB: document.getElementById('btn-route-b'),
+            btnC: document.getElementById('btn-route-c'),
             desc: document.getElementById('route-description'),
             tags: document.getElementById('route-tags'),
             timeline: document.getElementById('timeline-container'),
@@ -312,11 +341,28 @@
             dTitle: document.getElementById('detail-title'),
             dTime: document.getElementById('detail-time'),
             dPurpose: document.getElementById('detail-purpose'),
-            dMech: document.getElementById('detail-mechanism')
+            dMech: document.getElementById('detail-mechanism'),
+            todayBadge: document.getElementById('today-badge')
         };
 
         // --- Initialization ---
         function init() {
+            const today = new Date();
+            const dayOfWeek = today.getDay(); // 0 is Sunday, 1 is Monday, etc.
+            const daysMap = ['週日', '週一', '週二', '週三', '週四', '週五', '週六'];
+            
+            // 自動判斷今天的路線
+            if (dayOfWeek === 0) { // 週日
+                currentRoute = 'C';
+            } else if ([1, 3, 5].includes(dayOfWeek)) { // 週一、三、五
+                currentRoute = 'A';
+            } else { // 週二、四、六
+                currentRoute = 'B';
+            }
+
+            // 更新今日標籤 UI
+            els.todayBadge.innerHTML = `<i class="fa-regular fa-calendar-check mr-2"></i>今天為${daysMap[dayOfWeek]}，預設載入路線 ${currentRoute}`;
+
             renderRoute(currentRoute);
             // Show first step details by default
             showDetails(data[currentRoute].steps[0], 0);
@@ -331,21 +377,28 @@
 
         function renderRoute(routeId) {
             const routeData = data[routeId];
-            const isA = routeId === 'A';
 
-            // 1. Update Buttons Styling
-            if (isA) {
-                els.btnA.className = "flex-1 sm:flex-none px-6 py-3 rounded-lg text-sm font-bold shadow-md transition-all duration-200 flex items-center justify-center gap-2 focus:outline-none ring-offset-2 focus:ring-2 ring-emerald-500 bg-emerald-600 text-white";
-                els.btnB.className = "flex-1 sm:flex-none px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 focus:outline-none ring-offset-2 focus:ring-2 ring-blue-500 text-gray-600 hover:bg-gray-100 bg-white border border-gray-200";
-            } else {
-                els.btnA.className = "flex-1 sm:flex-none px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 focus:outline-none ring-offset-2 focus:ring-2 ring-emerald-500 text-gray-600 hover:bg-gray-100 bg-white border border-gray-200";
-                els.btnB.className = "flex-1 sm:flex-none px-6 py-3 rounded-lg text-sm font-bold shadow-md transition-all duration-200 flex items-center justify-center gap-2 focus:outline-none ring-offset-2 focus:ring-2 ring-blue-500 bg-blue-600 text-white";
-            }
+            // 1. Update Buttons Styling (3 States)
+            const btns = [
+                { id: 'A', el: els.btnA, colorClass: 'emerald' },
+                { id: 'B', el: els.btnB, colorClass: 'blue' },
+                { id: 'C', el: els.btnC, colorClass: 'purple' }
+            ];
+
+            btns.forEach(btnInfo => {
+                if (btnInfo.id === routeId) {
+                    // 點中的狀態 (填滿顏色)
+                    btnInfo.el.className = `flex-1 md:flex-none px-6 py-3 rounded-lg text-sm font-bold shadow-md transition-all duration-200 flex items-center justify-center gap-2 focus:outline-none ring-offset-2 focus:ring-2 ring-${btnInfo.colorClass}-500 bg-${btnInfo.colorClass}-600 text-white`;
+                } else {
+                    // 未點中的狀態 (白底外框)
+                    btnInfo.el.className = `flex-1 md:flex-none px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 focus:outline-none ring-offset-2 focus:ring-2 ring-gray-300 text-gray-600 hover:bg-gray-100 bg-white border border-gray-200`;
+                }
+            });
 
             // 2. Update Description & Tags
             els.desc.textContent = routeData.description;
             els.tags.innerHTML = routeData.tags.map(tag => 
-                `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${isA ? 'bg-emerald-100 text-emerald-800' : 'bg-blue-100 text-blue-800'}">#${tag}</span>`
+                `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-${routeData.themeColor}-100 text-${routeData.themeColor}-800">#${tag}</span>`
             ).join('');
 
             // 3. Update Chart
@@ -374,7 +427,7 @@
                 stepEl.onclick = () => showDetails(step, index);
 
                 // Dot on line
-                const dotColor = routeData.id === 'A' ? 'bg-emerald-500' : 'bg-blue-500';
+                const dotColor = `bg-${routeData.themeColor}-500`;
                 stepEl.innerHTML = `
                     <div class="absolute left-[20px] top-6 w-3 h-3 rounded-full ${dotColor} border-2 border-white shadow transform -translate-x-1/2 z-10 transition-transform group-hover:scale-125"></div>
                     <div class="bg-white p-4 rounded-lg border border-gray-100 shadow-sm group-hover:border-${routeData.themeColor}-300 transition-colors" id="step-card-${index}">
@@ -395,11 +448,12 @@
 
         function showDetails(step, index) {
             // UI Update for Timeline Selection
+            const ringColor = `ring-${data[currentRoute].themeColor}-400`;
             document.querySelectorAll('.step-card > div:nth-child(2)').forEach((el, i) => {
+                // Remove all possible ring colors
+                el.classList.remove('ring-2', 'ring-emerald-400', 'ring-blue-400', 'ring-purple-400');
                 if (i === index) {
-                    el.classList.add('ring-2', currentRoute === 'A' ? 'ring-emerald-400' : 'ring-blue-400');
-                } else {
-                    el.classList.remove('ring-2', 'ring-emerald-400', 'ring-blue-400');
+                    el.classList.add('ring-2', ringColor);
                 }
             });
 
@@ -408,7 +462,7 @@
             els.detailPanel.classList.add('opacity-100', 'translate-y-0');
 
             // Populate Content
-            const themeText = currentRoute === 'A' ? 'text-emerald-600' : 'text-blue-600';
+            const themeText = `text-${data[currentRoute].themeColor}-600`;
             els.dIcon.innerHTML = `<i class="fa-solid ${step.icon} ${themeText}"></i>`;
             els.dTitle.textContent = step.item;
             els.dTime.textContent = `${step.time} • ${step.condition}`;
@@ -434,7 +488,10 @@
         function updateChart(routeData) {
             const ctx = document.getElementById('radarChart').getContext('2d');
             
-            const color = routeData.id === 'A' ? '16, 185, 129' : '59, 130, 246'; // Emerald vs Blue RGB
+            let color;
+            if (routeData.id === 'A') color = '16, 185, 129';       // Emerald
+            else if (routeData.id === 'B') color = '59, 130, 246';  // Blue
+            else color = '168, 85, 247';                            // Purple
 
             if (chartInstance) {
                 chartInstance.destroy();
