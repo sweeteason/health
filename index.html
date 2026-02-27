@@ -15,7 +15,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
     
     <style>
-        body { font-family: 'Noto Sans TC', sans-serif; background-color: #fdfbf7; color: #4a4a4a; }
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #fdfbf7; color: #4a4a4a; scroll-behavior: smooth; }
         .card { background: white; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); transition: transform 0.2s; }
         .card:hover { transform: translateY(-2px); }
         .timeline-line { position: absolute; left: 24px; top: 0; bottom: 0; width: 2px; background: #e5e7eb; z-index: 0; }
@@ -263,7 +263,7 @@
             },
             'Rest': {
                 title: '🌴 休耕日 (星期日)',
-                colorName: 'emerald', // Using emerald for rest day styling safely
+                colorName: 'emerald',
                 desc: '核心戰略：肝臟重置。停用所有植化素，讓肝臟酵素休息，避免腫瘤產生抗藥性。',
                 events: [
                     { time: '07:40', label: '起床空腹', items: ['乳酸菌 x1'], mechanism: '僅補充益生菌維持基礎腸道微生態，不給予肝臟壓力。', icon: '🌅' },
@@ -279,14 +279,13 @@
             'emerald': { border: 'border-emerald-300', dot: 'bg-emerald-500' }
         };
 
-        // --- State Management ---
         let defaultRoute = 'A';
         let currentRoute = 'A';
         let radarChart = null;
 
         // --- Time Checking Logic ---
         function parseTime(timeStr) {
-            if (timeStr === '全日') return -1; // 忽略特定時間判定
+            if (timeStr === '全日') return -1;
             const [h, m] = timeStr.split(':').map(Number);
             return (h * 60) + (m || 0);
         }
@@ -312,7 +311,6 @@
             const data = scheduleData[routeKey];
             const container = document.getElementById('scheduleContainer');
             
-            // 判斷當下應該高亮哪個時段
             const isTodayRoute = (routeKey === defaultRoute);
             const currentStepIdx = isTodayRoute ? getCurrentStepIndex(data.events) : -1;
 
@@ -329,12 +327,14 @@
 
             data.events.forEach((event, index) => {
                 const isCurrentNow = (index === currentStepIdx);
+                // 賦予當前時段專屬 ID 以利錨點定位
+                const stepId = isCurrentNow ? 'id="current-active-step"' : '';
+                
                 const itemsHtml = event.items.map(item => {
                     const badgeColor = item.includes('停用') ? 'bg-slate-200 text-slate-600' : 'bg-slate-100 text-slate-700';
                     return `<span class="inline-block ${badgeColor} px-2 py-1 rounded-md text-sm font-bold shadow-sm mr-2 mb-1">${item}</span>`;
                 }).join('');
                 
-                // 動態樣式判斷
                 const colorObj = TailwindColors[data.colorName];
                 const dotColor = isCurrentNow ? 'bg-amber-500' : colorObj.dot;
                 const dotPulse = isCurrentNow ? `<div class="absolute left-[20px] top-1 w-4 h-4 rounded-full bg-amber-400 animate-ping transform -translate-x-1/2 z-0"></div>` : '';
@@ -349,7 +349,7 @@
                 const timeColor = isCurrentNow ? 'text-amber-600' : 'text-slate-400';
 
                 html += `
-                    <div class="relative pl-10 group ${isCurrentNow ? 'z-20' : ''}">
+                    <div ${stepId} class="relative pl-10 group ${isCurrentNow ? 'z-20' : ''}">
                         ${dotPulse}
                         <div class="timeline-dot absolute left-5 top-1 w-4 h-4 rounded-full border-2 border-white shadow-sm flex items-center justify-center transform -translate-x-1/2 ${dotColor}"></div>
                         
@@ -377,14 +377,10 @@
 
         function switchRoute(route) {
             currentRoute = route;
-            
             ['A', 'B', 'Rest'].forEach(r => {
                 const btn = document.getElementById(`btn-${r}`);
-                if (r === route) {
-                    btn.className = 'active-tab pb-2 transition-colors';
-                } else {
-                    btn.className = 'inactive-tab pb-2 hover:text-slate-600 transition-colors';
-                }
+                if (r === route) btn.className = 'active-tab pb-2 transition-colors';
+                else btn.className = 'inactive-tab pb-2 hover:text-slate-600 transition-colors';
             });
 
             renderSchedule(route);
@@ -405,13 +401,12 @@
 
             if ('serviceWorker' in navigator) {
                 const registration = await navigator.serviceWorker.ready;
-                
                 const btn = document.getElementById('notify-btn');
                 btn.innerHTML = `<i class="fa-solid fa-bell-on mr-1.5"></i>提醒已啟動 (極省電)`;
                 btn.className = "px-3 py-1.5 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-lg border border-emerald-100 shadow-sm flex items-center whitespace-nowrap";
 
                 scheduleTodayAlerts(registration);
-                alert("✅ 成功註冊系統級鬧鐘！\n時間到前 30 分鐘，就算關閉 App 也會準時推播提醒。此做法不消耗額外背景電力。");
+                alert("✅ 成功註冊系統級鬧鐘！\n時間到前 30 分鐘，就算關閉 App 也會準時推播提醒。");
             }
         }
 
@@ -421,15 +416,12 @@
             const now = new Date();
 
             routeData.events.forEach((event, index) => {
-                // 排除全日或不吃保健品的時段
                 if (event.time === '全日' || event.items.includes('停用所有保健品')) return;
 
                 const [h, m] = event.time.split(':').map(Number);
                 let targetTime = new Date();
                 targetTime.setHours(h, m, 0, 0);
-                
-                // 扣除 30 分鐘
-                targetTime.setMinutes(targetTime.getMinutes() - 30);
+                targetTime.setMinutes(targetTime.getMinutes() - 30); // 扣除 30 分鐘
 
                 if (targetTime > now) {
                     const title = `保健戰略提醒：再過30分鐘 (${event.time})`;
@@ -437,21 +429,13 @@
 
                     if (supportsTriggers) {
                         registration.showNotification(title, {
-                            body: body,
-                            icon: 'icon.png',
-                            vibrate: [200, 100, 200, 100, 200],
-                            tag: `alert-${defaultRoute}-${index}`,
+                            body: body, icon: 'icon.png', vibrate: [200, 100, 200, 100, 200], tag: `alert-${defaultRoute}-${index}`,
                             showTrigger: new TimestampTrigger(targetTime.getTime())
                         });
                     } else {
-                        // 備用方案：透過 Timeout 觸發 (若系統未殺死背景)
                         const delay = targetTime.getTime() - now.getTime();
                         setTimeout(() => {
-                            registration.showNotification(title, {
-                                body: body,
-                                icon: 'icon.png',
-                                vibrate: [200, 100, 200]
-                            });
+                            registration.showNotification(title, { body: body, icon: 'icon.png', vibrate: [200, 100, 200] });
                         }, delay);
                     }
                 }
@@ -466,29 +450,15 @@
                 data: {
                     labels: ['抑制血管新生', '抗發炎環境', '能量阻斷 AMPK', '降解 HIF-1α', '鐵質螯合'],
                     datasets: [{
-                        label: '當前路線強度',
-                        data: [0,0,0,0,0],
-                        fill: true,
-                        backgroundColor: 'rgba(200, 200, 200, 0.2)',
-                        borderColor: 'rgb(200, 200, 200)',
-                        pointBackgroundColor: 'rgb(200, 200, 200)',
-                        pointBorderColor: '#fff',
-                        pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: 'rgb(200, 200, 200)'
+                        label: '當前路線強度', data: [0,0,0,0,0], fill: true,
+                        backgroundColor: 'rgba(200, 200, 200, 0.2)', borderColor: 'rgb(200, 200, 200)',
+                        pointBackgroundColor: 'rgb(200, 200, 200)', pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff', pointHoverBorderColor: 'rgb(200, 200, 200)'
                     }]
                 },
                 options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    elements: { line: { borderWidth: 3 } },
-                    scales: {
-                        r: {
-                            angleLines: { display: true },
-                            suggestedMin: 0,
-                            suggestedMax: 100,
-                            ticks: { display: false } 
-                        }
-                    },
+                    responsive: true, maintainAspectRatio: false, elements: { line: { borderWidth: 3 } },
+                    scales: { r: { angleLines: { display: true }, suggestedMin: 0, suggestedMax: 100, ticks: { display: false } } },
                     plugins: { legend: { display: false } }
                 }
             });
@@ -499,17 +469,11 @@
             let newData, newColor, newBg;
 
             if (route === 'A') {
-                newData = [80, 50, 95, 50, 80]; 
-                newColor = 'rgb(220, 38, 38)'; 
-                newBg = 'rgba(220, 38, 38, 0.2)';
+                newData = [80, 50, 95, 50, 80]; newColor = 'rgb(220, 38, 38)'; newBg = 'rgba(220, 38, 38, 0.2)';
             } else if (route === 'B') {
-                newData = [70, 95, 40, 95, 30]; 
-                newColor = 'rgb(37, 99, 235)'; 
-                newBg = 'rgba(37, 99, 235, 0.2)';
+                newData = [70, 95, 40, 95, 30]; newColor = 'rgb(37, 99, 235)'; newBg = 'rgba(37, 99, 235, 0.2)';
             } else {
-                newData = [20, 30, 20, 20, 20]; 
-                newColor = 'rgb(16, 185, 129)'; 
-                newBg = 'rgba(16, 185, 129, 0.2)';
+                newData = [20, 30, 20, 20, 20]; newColor = 'rgb(16, 185, 129)'; newBg = 'rgba(16, 185, 129, 0.2)';
             }
 
             radarChart.data.datasets[0].data = newData;
@@ -526,29 +490,30 @@
             const dayOfWeek = today.getDay();
             const daysMap = ['週日', '週一', '週二', '週三', '週四', '週五', '週六'];
             
-            // 設定今日路線
             if (dayOfWeek === 0) defaultRoute = 'Rest';
             else if ([1, 3, 5].includes(dayOfWeek)) defaultRoute = 'A';
             else defaultRoute = 'B';
             
             currentRoute = defaultRoute;
-
-            // 更新 UI 徽章
             document.getElementById('today-badge').innerHTML = `<i class="fa-regular fa-calendar-check mr-1.5"></i>今天為${daysMap[dayOfWeek]}，載入路線 ${currentRoute === 'Rest' ? '休耕日' : currentRoute}`;
 
-            // 若使用者已開啟過推播授權，改變按鈕外觀並自動排程
             if (Notification.permission === 'granted') {
                 const btn = document.getElementById('notify-btn');
                 btn.innerHTML = `<i class="fa-solid fa-bell mr-1.5"></i>推播已啟動`;
                 btn.className = "px-3 py-1.5 bg-emerald-50 text-emerald-700 text-xs font-bold rounded-lg border border-emerald-100 shadow-sm flex items-center whitespace-nowrap";
-                
-                if ('serviceWorker' in navigator) {
-                    navigator.serviceWorker.ready.then(reg => scheduleTodayAlerts(reg));
-                }
+                if ('serviceWorker' in navigator) navigator.serviceWorker.ready.then(reg => scheduleTodayAlerts(reg));
             }
 
             initChart();
             switchRoute(currentRoute);
+
+            // 【新增功能】延遲 500 毫秒，等畫面渲染完畢後，自動平滑滾動到「目前時段」
+            setTimeout(() => {
+                const activeStep = document.getElementById('current-active-step');
+                if (activeStep) {
+                    activeStep.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 500);
         });
 
     </script>
