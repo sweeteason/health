@@ -30,19 +30,10 @@
             max-height: 350px;
         }
 
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1; 
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #cbd5e1; 
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8; 
-        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
         .timeline-line {
             position: absolute;
@@ -54,9 +45,7 @@
             z-index: 0;
         }
 
-        .step-card {
-            transition: all 0.3s ease;
-        }
+        .step-card { transition: all 0.3s ease; }
         .step-card:hover {
             transform: translateY(-2px);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -76,106 +65,89 @@
                 <h1 class="text-2xl font-bold text-slate-800 tracking-tight">
                     <i class="fa-solid fa-dna text-teal-600 mr-2"></i>【終極完全體】抗腫瘤與代謝防護一週課表
                 </h1>
-                <div id="today-badge" class="bg-indigo-50 text-indigo-700 px-4 py-2 rounded-lg text-sm font-bold border border-indigo-100 flex items-center shadow-sm whitespace-nowrap">
-                    <i class="fa-regular fa-calendar-check mr-2"></i>系統載入中...
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <div id="today-badge" class="bg-indigo-50 text-indigo-700 px-4 py-2 rounded-lg text-sm font-bold border border-indigo-100 flex items-center shadow-sm whitespace-nowrap">
+                        <i class="fa-regular fa-calendar-check mr-2"></i>系統載入中...
+                    </div>
+                    <button onclick="enableSmartNotifications()" id="notify-btn" class="bg-teal-50 text-teal-700 px-4 py-2 rounded-lg text-sm font-bold border border-teal-100 flex items-center shadow-sm hover:bg-teal-100 transition whitespace-nowrap">
+                        <i class="fa-regular fa-bell mr-2"></i>開啟 30 分鐘前提醒
+                    </button>
                 </div>
             </div>
             <p class="mt-2 text-sm text-gray-500 max-w-3xl">
-                執行節奏：星期一、三、五（路線 A）；星期二、四、六（路線 B）；星期日（休耕）。完美貼合您 07:40、08:30、12:00、18:00 的四大黃金節點。系統已為您自動載入今日戰略。
+                執行節奏：星期一、三、五（路線 A）；星期二、四、六（路線 B）；星期日（休耕）。完美貼合您 07:40、08:30、12:00、18:00 的四大黃金節點。
             </p>
         </div>
     </header>
 
     <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-        
         <section class="mb-8">
             <div class="bg-white rounded-xl shadow-sm p-1 inline-flex w-full md:w-auto border border-gray-200 flex-col md:flex-row gap-1">
                 <button id="btn-route-a" onclick="switchRoute('A')" class="flex-1 md:flex-none px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 focus:outline-none ring-offset-2 focus:ring-2 ring-emerald-500 text-gray-600 hover:bg-gray-50">
-                    <i class="fa-solid fa-leaf"></i>
-                    路線 A (一/三/五)
+                    <i class="fa-solid fa-leaf"></i> 路線 A (一/三/五)
                 </button>
                 <button id="btn-route-b" onclick="switchRoute('B')" class="flex-1 md:flex-none px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 focus:outline-none ring-offset-2 focus:ring-2 ring-blue-500 text-gray-600 hover:bg-gray-50">
-                    <i class="fa-solid fa-shield-virus"></i>
-                    路線 B (二/四/六)
+                    <i class="fa-solid fa-shield-virus"></i> 路線 B (二/四/六)
                 </button>
                 <button id="btn-route-c" onclick="switchRoute('C')" class="flex-1 md:flex-none px-6 py-3 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 focus:outline-none ring-offset-2 focus:ring-2 ring-purple-500 text-gray-600 hover:bg-gray-50">
-                    <i class="fa-solid fa-bed"></i>
-                    休耕日 (週日)
+                    <i class="fa-solid fa-bed"></i> 休耕日 (週日)
                 </button>
             </div>
             
             <div class="mt-4 bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
                 <h2 class="text-lg font-semibold text-gray-800 mb-2" id="route-title">戰略總結</h2>
-                <p id="route-description" class="text-gray-600 leading-relaxed font-medium">
-                    </p>
-                <div class="mt-4 flex flex-wrap gap-2" id="route-tags">
-                    </div>
+                <p id="route-description" class="text-gray-600 leading-relaxed font-medium"></p>
+                <div class="mt-4 flex flex-wrap gap-2" id="route-tags"></div>
             </div>
         </section>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            
             <div class="lg:col-span-7">
                 <h3 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
-                    <i class="fa-regular fa-clock mr-2 text-gray-400"></i>
-                    執行時間軸
+                    <i class="fa-regular fa-clock mr-2 text-gray-400"></i> 執行時間軸
                 </h3>
                 <p class="text-sm text-gray-500 mb-6">目前時段已自動高亮標記。點擊下方時間點可查看詳細顧問解析與生化機轉。</p>
-                
                 <div class="relative pl-2" id="timeline-container">
                     <div class="timeline-line"></div>
-                    </div>
+                </div>
             </div>
 
             <div class="lg:col-span-5 flex flex-col gap-6">
-                
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-                    <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wide mb-4">
-                        戰略雷達分析
-                    </h3>
-                    <p class="text-xs text-gray-400 mb-2">本圖表展示當前路線在不同生理調節層面的權重分佈。</p>
-                    <div class="chart-container">
-                        <canvas id="radarChart"></canvas>
-                    </div>
+                    <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wide mb-4">戰略雷達分析</h3>
+                    <div class="chart-container"><canvas id="radarChart"></canvas></div>
                 </div>
 
                 <div id="detail-panel" class="bg-slate-50 border border-slate-200 p-6 rounded-xl shadow-sm transition-all duration-300 opacity-0 transform translate-y-4">
                     <div class="flex items-start justify-between mb-3">
                         <div class="flex items-center gap-3">
-                            <div id="detail-icon" class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm text-lg">
-                                </div>
+                            <div id="detail-icon" class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm text-lg"></div>
                             <div>
-                                <h4 id="detail-title" class="font-bold text-gray-800 text-lg">
-                                    </h4>
-                                <span id="detail-time" class="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                                    </span>
+                                <h4 id="detail-title" class="font-bold text-gray-800 text-lg"></h4>
+                                <span id="detail-time" class="text-xs font-semibold text-gray-500 uppercase tracking-wider"></span>
                             </div>
                         </div>
                     </div>
-                    
                     <div class="space-y-4">
                         <div>
                             <h5 class="text-xs font-bold text-gray-400 uppercase mb-1">戰術摘要</h5>
-                            <p id="detail-purpose" class="text-gray-700 text-sm font-medium">
-                                </p>
+                            <p id="detail-purpose" class="text-gray-700 text-sm font-medium"></p>
                         </div>
                         <div class="bg-white p-4 rounded-lg border border-gray-100 shadow-sm">
                             <h5 class="text-xs font-bold text-indigo-500 uppercase mb-2">
                                 <i class="fa-solid fa-user-doctor mr-1"></i>顧問解析
                             </h5>
-                            <p id="detail-mechanism" class="text-gray-600 text-sm leading-relaxed">
-                                </p>
+                            <p id="detail-mechanism" class="text-gray-600 text-sm leading-relaxed"></p>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
 
         <section class="mt-12 bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex items-center justify-between">
                 <h3 class="text-lg font-semibold text-gray-800">快速對照清單</h3>
-                <span class="text-xs text-amber-600 bg-amber-100 px-2 py-1 rounded font-bold"><i class="fa-solid fa-bell mr-1"></i>黃色標記為當前任務</span>
+                <span class="text-xs text-amber-600 bg-amber-100 px-2 py-1 rounded font-bold"><i class="fa-solid fa-thumbtack mr-1"></i>黃色標記為目前時段</span>
             </div>
             <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
@@ -186,21 +158,11 @@
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">補充品項</th>
                         </tr>
                     </thead>
-                    <tbody id="summary-table-body" class="bg-white divide-y divide-gray-200">
-                        </tbody>
+                    <tbody id="summary-table-body" class="bg-white divide-y divide-gray-200"></tbody>
                 </table>
             </div>
         </section>
-
     </main>
-
-    <footer class="bg-white border-t border-gray-200 mt-12 py-8">
-        <div class="max-w-7xl mx-auto px-4 text-center">
-            <p class="text-sm text-gray-400">
-                此互動指南僅供參考，請務必遵照專業醫師與藥師的即時建議調整。
-            </p>
-        </div>
-    </footer>
 
     <script>
         // --- Data Definitions ---
@@ -213,42 +175,10 @@
                 radarData: [95, 60, 85, 80, 50],
                 tags: ["AMPK 激活", "血管新生抑制", "貧血保護", "腸道定殖"],
                 steps: [
-                    {
-                        time: "07:40",
-                        condition: "起床空腹",
-                        item: "1 顆 乳酸菌 ＋ 1 顆 紅景天",
-                        icon: "fa-sun",
-                        purpose: "安全定殖並提早關閉 HIF-1α 警報器。",
-                        mechanism: "50分鐘的空腹期，讓乳酸菌安全抵達腸道定殖；水溶性的紅景天則快速進入血液，早一步關閉腫瘤的缺氧警報器 (HIF-1α)，同時讓您一整天精神奕奕。",
-                        color: "bg-emerald-100 text-emerald-700"
-                    },
-                    {
-                        time: "08:30",
-                        condition: "公司早餐 / 隨餐",
-                        item: "1 顆 小檗鹼",
-                        icon: "fa-utensils",
-                        purpose: "會師紅景天，共同活化 AMPK。",
-                        mechanism: "第一口食物下肚後吃小檗鹼，不傷胃。它與剛剛的紅景天在體內「會師」，共同活化 AMPK（斷電小組聯手），徹底切斷腫瘤能量。同時為晚上的西藥爭取近 10 小時的代謝期。",
-                        color: "bg-emerald-100 text-emerald-700"
-                    },
-                    {
-                        time: "12:00",
-                        condition: "公司午餐 / 飯後",
-                        item: "1 顆 EGCG (綠茶萃取)",
-                        icon: "fa-mug-hot",
-                        purpose: "溫和抑制血管新生、保護貧血。",
-                        mechanism: "飯後吃避開胃痛與肝毒性，溫和螯合午餐中多餘的鐵質，保護地中海型貧血。",
-                        color: "bg-emerald-100 text-emerald-700"
-                    },
-                    {
-                        time: "18:00",
-                        condition: "晚餐 / 隨餐",
-                        item: "1 顆 Lipanthyl (降脂西藥)",
-                        icon: "fa-pills",
-                        purpose: "西藥常規服用。",
-                        mechanism: "肝臟通道已淨空，專心處理西藥。",
-                        color: "bg-emerald-50 text-emerald-600 border-emerald-200"
-                    }
+                    { time: "07:40", condition: "起床空腹", item: "1 顆 乳酸菌 ＋ 1 顆 紅景天", icon: "fa-sun", purpose: "安全定殖並提早關閉 HIF-1α 警報器。", mechanism: "50分鐘的空腹期，讓乳酸菌安全抵達腸道定殖；水溶性的紅景天則快速進入血液，早一步關閉腫瘤的缺氧警報器 (HIF-1α)，同時讓您一整天精神奕奕。", color: "bg-emerald-100 text-emerald-700" },
+                    { time: "08:30", condition: "公司早餐 / 隨餐", item: "1 顆 小檗鹼", icon: "fa-utensils", purpose: "會師紅景天，共同活化 AMPK。", mechanism: "第一口食物下肚後吃小檗鹼，不傷胃。它與剛剛的紅景天在體內「會師」，共同活化 AMPK（斷電小組聯手），徹底切斷腫瘤能量。同時為晚上的西藥爭取近 10 小時的代謝期。", color: "bg-emerald-100 text-emerald-700" },
+                    { time: "12:00", condition: "公司午餐 / 飯後", item: "1 顆 EGCG (綠茶萃取)", icon: "fa-mug-hot", purpose: "溫和抑制血管新生、保護貧血。", mechanism: "飯後吃避開胃痛與肝毒性，溫和螯合午餐中多餘的鐵質，保護地中海型貧血。", color: "bg-emerald-100 text-emerald-700" },
+                    { time: "18:00", condition: "晚餐 / 隨餐", item: "1 顆 Lipanthyl (降脂西藥)", icon: "fa-pills", purpose: "西藥常規服用。", mechanism: "肝臟通道已淨空，專心處理西藥。", color: "bg-emerald-50 text-emerald-600 border-emerald-200" }
                 ]
             },
             B: {
@@ -259,42 +189,10 @@
                 radarData: [50, 95, 85, 60, 95],
                 tags: ["HIF-1α 降解", "撲滅微環境發炎", "SIRT1 啟動", "血管彈性"],
                 steps: [
-                    {
-                        time: "07:40",
-                        condition: "起床空腹",
-                        item: "1 顆 乳酸菌 ＋ 1 顆 紅景天",
-                        icon: "fa-sun",
-                        purpose: "第一重壓制缺氧引擎。",
-                        mechanism: "同樣先讓紅景天打頭陣，對腫瘤的缺氧引擎進行「第一重壓制」。",
-                        color: "bg-blue-100 text-blue-700"
-                    },
-                    {
-                        time: "08:30",
-                        condition: "公司早餐 / 隨餐",
-                        item: "1 顆 十字花科 ＋ 白藜蘆醇",
-                        icon: "fa-carrot",
-                        purpose: "第二重與第三重毀滅，完美連擊。",
-                        mechanism: "這是最完美的連擊！十字花科（蘿蔔硫素）與白藜蘆醇進場，對腫瘤的缺氧引擎進行「第二重與第三重毀滅」。三管齊下，把 HIF-1α 壓制到最低點！",
-                        color: "bg-blue-100 text-blue-700"
-                    },
-                    {
-                        time: "12:00",
-                        condition: "公司午餐 / 隨餐",
-                        item: "1 顆 Longvida 薑黃素",
-                        icon: "fa-capsules",
-                        purpose: "下午發揮強大抗發炎與抗血管新生威力。",
-                        mechanism: "藉由午餐油脂達到最高吸收率，下午發揮強大抗發炎與抗血管新生威力，且有 6 小時以上的時間讓肝臟代謝，不塞車。",
-                        color: "bg-blue-100 text-blue-700"
-                    },
-                    {
-                        time: "18:00",
-                        condition: "晚餐 / 隨餐",
-                        item: "1 顆 Lipanthyl (降脂西藥)",
-                        icon: "fa-pills",
-                        purpose: "確保夜間最大降脂功效。",
-                        mechanism: "確保西藥在夜間發揮最大降血脂功效。",
-                        color: "bg-blue-50 text-blue-600 border-blue-200"
-                    }
+                    { time: "07:40", condition: "起床空腹", item: "1 顆 乳酸菌 ＋ 1 顆 紅景天", icon: "fa-sun", purpose: "第一重壓制缺氧引擎。", mechanism: "同樣先讓紅景天打頭陣，對腫瘤的缺氧引擎進行「第一重壓制」。", color: "bg-blue-100 text-blue-700" },
+                    { time: "08:30", condition: "公司早餐 / 隨餐", item: "1 顆 十字花科 ＋ 白藜蘆醇", icon: "fa-carrot", purpose: "第二重與第三重毀滅，完美連擊。", mechanism: "這是最完美的連擊！十字花科（蘿蔔硫素）與白藜蘆醇進場，對腫瘤的缺氧引擎進行「第二重與第三重毀滅」。三管齊下，把 HIF-1α 壓制到最低點！", color: "bg-blue-100 text-blue-700" },
+                    { time: "12:00", condition: "公司午餐 / 隨餐", item: "1 顆 Longvida 薑黃素", icon: "fa-capsules", purpose: "下午發揮強大抗發炎與抗血管新生威力。", mechanism: "藉由午餐油脂達到最高吸收率，下午發揮強大抗發炎與抗血管新生威力，且有 6 小時以上的時間讓肝臟代謝，不塞車。", color: "bg-blue-100 text-blue-700" },
+                    { time: "18:00", condition: "晚餐 / 隨餐", item: "1 顆 Lipanthyl (降脂西藥)", icon: "fa-pills", purpose: "確保夜間最大降脂功效。", mechanism: "確保西藥在夜間發揮最大降血脂功效。", color: "bg-blue-50 text-blue-600 border-blue-200" }
                 ]
             },
             C: {
@@ -305,54 +203,20 @@
                 radarData: [20, 20, 50, 60, 20],
                 tags: ["肝臟休耕", "避免抗藥性", "微環境重置"],
                 steps: [
-                    {
-                        time: "07:40",
-                        condition: "起床空腹",
-                        item: "1 顆 乳酸菌",
-                        icon: "fa-bacteria",
-                        purpose: "維持腸胃道健康。",
-                        mechanism: "僅補充益生菌維持基礎腸道微生態，不給予肝臟任何額外解毒與代謝壓力。",
-                        color: "bg-purple-100 text-purple-700"
-                    },
-                    {
-                        time: "08:30",
-                        condition: "早餐",
-                        item: "不吃 任何保養品",
-                        icon: "fa-mug-saucer",
-                        purpose: "臟器休息時段。",
-                        mechanism: "刻意留白，讓細胞通道重置，避免身體產生適應性或腫瘤抗藥性。",
-                        color: "bg-gray-100 text-gray-500"
-                    },
-                    {
-                        time: "12:00",
-                        condition: "午餐",
-                        item: "不吃 任何保養品",
-                        icon: "fa-bowl-food",
-                        purpose: "臟器休息時段。",
-                        mechanism: "讓肝臟有充足的黃金時間進行自體修復與深層解毒。",
-                        color: "bg-gray-100 text-gray-500"
-                    },
-                    {
-                        time: "18:00",
-                        condition: "晚餐 / 隨餐",
-                        item: "1 顆 Lipanthyl (降脂西藥)",
-                        icon: "fa-pills",
-                        purpose: "西藥絕對不能停。",
-                        mechanism: "維持必須的處方藥物治療，在無任何保健品干擾的完美環境下，讓肝臟單純、專注地處理西藥。",
-                        color: "bg-purple-100 text-purple-700"
-                    }
+                    { time: "07:40", condition: "起床空腹", item: "1 顆 乳酸菌", icon: "fa-bacteria", purpose: "維持腸胃道健康。", mechanism: "僅補充益生菌維持基礎腸道微生態，不給予肝臟任何額外解毒與代謝壓力。", color: "bg-purple-100 text-purple-700" },
+                    { time: "08:30", condition: "早餐", item: "不吃 任何保養品", icon: "fa-mug-saucer", purpose: "臟器休息時段。", mechanism: "刻意留白，讓細胞通道重置，避免身體產生適應性或腫瘤抗藥性。", color: "bg-gray-100 text-gray-500" },
+                    { time: "12:00", condition: "午餐", item: "不吃 任何保養品", icon: "fa-bowl-food", purpose: "臟器休息時段。", mechanism: "讓肝臟有充足的黃金時間進行自體修復與深層解毒。", color: "bg-gray-100 text-gray-500" },
+                    { time: "18:00", condition: "晚餐 / 隨餐", item: "1 顆 Lipanthyl (降脂西藥)", icon: "fa-pills", purpose: "西藥絕對不能停。", mechanism: "維持必須的處方藥物治療，在無任何保健品干擾的完美環境下，讓肝臟單純、專注地處理西藥。", color: "bg-purple-100 text-purple-700" }
                 ]
             }
         };
 
         const radarLabels = ['能量代謝調節 (AMPK)', '抗缺氧能力 (HIF-1α)', '腸道健康', '血液/血管保護', '抗發炎/抗氧化'];
 
-        // --- State Management ---
-        let defaultRoute = 'A'; // 儲存「今天」該走的路線
-        let currentRoute = 'A'; // 儲存目前使用者點擊查看的路線
+        let defaultRoute = 'A'; 
+        let currentRoute = 'A'; 
         let chartInstance = null;
 
-        // --- DOM Elements ---
         const els = {
             btnA: document.getElementById('btn-route-a'),
             btnB: document.getElementById('btn-route-b'),
@@ -368,52 +232,121 @@
             dTime: document.getElementById('detail-time'),
             dPurpose: document.getElementById('detail-purpose'),
             dMech: document.getElementById('detail-mechanism'),
-            todayBadge: document.getElementById('today-badge')
+            todayBadge: document.getElementById('today-badge'),
+            notifyBtn: document.getElementById('notify-btn')
         };
 
-        // --- 核心時間判定邏輯 ---
+        // --- 核心：省電排程推播系統 (Notification Triggers API) ---
+        async function enableSmartNotifications() {
+            if (!("Notification" in window)) {
+                alert("您的瀏覽器不支援通知功能");
+                return;
+            }
+
+            const permission = await Notification.requestPermission();
+            if (permission !== 'granted') {
+                alert("推播權限已被拒絕，請至系統設定中開啟。");
+                return;
+            }
+
+            if ('serviceWorker' in navigator) {
+                const registration = await navigator.serviceWorker.ready;
+                
+                // 更新按鈕外觀
+                els.notifyBtn.innerHTML = `<i class="fa-solid fa-bell-on mr-2"></i>提醒已啟動 (極省電模式)`;
+                els.notifyBtn.classList.replace('bg-teal-50', 'bg-emerald-100');
+                els.notifyBtn.classList.replace('text-teal-700', 'text-emerald-800');
+
+                // 註冊今日鬧鐘
+                scheduleTodayAlerts(registration);
+                alert("✅ 已成功註冊系統級鬧鐘！\n時間到前 30 分鐘，就算關閉 App 也會準時推播提醒。這項功能由 Android 底層接管，不會消耗額外電力。");
+            }
+        }
+
+        function scheduleTodayAlerts(registration) {
+            // 由於安全性與支援度，我們先檢查是否支援 showTrigger (Chrome 實驗性功能/現代 Android 支援)
+            const supportsTriggers = 'showTrigger' in Notification.prototype;
+            
+            const routeData = data[defaultRoute];
+            const now = new Date();
+
+            routeData.steps.forEach((step, index) => {
+                if (step.item.includes("不吃")) return;
+
+                const [h, m] = step.time.split(':').map(Number);
+                let targetTime = new Date();
+                targetTime.setHours(h, m, 0, 0);
+                
+                // 扣除 30 分鐘
+                targetTime.setMinutes(targetTime.getMinutes() - 30);
+
+                // 如果這個時間在未來，才設定鬧鐘
+                if (targetTime > now) {
+                    if (supportsTriggers) {
+                        // 【極度省電法】：系統級排程
+                        registration.showNotification(`戰略提醒：再過30分鐘 (${step.time})`, {
+                            body: `即將服用：${step.item}\n戰術：${step.purpose}`,
+                            icon: 'icon.png',
+                            vibrate: [200, 100, 200, 100, 200],
+                            tag: `alert-${defaultRoute}-${index}`, // 避免重複推播
+                            showTrigger: new TimestampTrigger(targetTime.getTime())
+                        });
+                    } else {
+                        // 備用方案：如果瀏覽器不支援 Trigger API，改用傳統 Timeout (前提是 App 沒被系統強制睡眠)
+                        const delay = targetTime.getTime() - now.getTime();
+                        setTimeout(() => {
+                            registration.showNotification(`戰略提醒：再過30分鐘 (${step.time})`, {
+                                body: `即將服用：${step.item}\n戰術：${step.purpose}`,
+                                icon: 'icon.png',
+                                vibrate: [200, 100, 200]
+                            });
+                        }, delay);
+                    }
+                }
+            });
+        }
+
+
+        // --- 時間判定 ---
         function getCurrentStepIndex(steps) {
             const now = new Date();
             const currentMinutes = now.getHours() * 60 + now.getMinutes();
-
             let activeIndex = 0;
             for (let i = 0; i < steps.length; i++) {
                 const [hours, mins] = steps[i].time.split(':').map(Number);
                 const stepMinutes = hours * 60 + mins;
-
-                // 如果當下時間大於等於該步驟時間，則設為 active
-                if (currentMinutes >= stepMinutes) {
-                    activeIndex = i;
-                } else {
-                    break; // 因為是照順序排的，碰到未來的時間就停止
-                }
+                if (currentMinutes >= stepMinutes) activeIndex = i;
+                else break;
             }
             return activeIndex;
         }
 
-        // --- Initialization ---
         function init() {
             const today = new Date();
-            const dayOfWeek = today.getDay(); // 0 is Sunday, 1 is Monday, etc.
+            const dayOfWeek = today.getDay(); 
             const daysMap = ['週日', '週一', '週二', '週三', '週四', '週五', '週六'];
             
-            // 自動判斷今天的路線
-            if (dayOfWeek === 0) {
-                defaultRoute = 'C';
-            } else if ([1, 3, 5].includes(dayOfWeek)) {
-                defaultRoute = 'A';
-            } else {
-                defaultRoute = 'B';
-            }
+            if (dayOfWeek === 0) defaultRoute = 'C';
+            else if ([1, 3, 5].includes(dayOfWeek)) defaultRoute = 'A';
+            else defaultRoute = 'B';
             currentRoute = defaultRoute;
 
-            // 更新今日標籤 UI
             els.todayBadge.innerHTML = `<i class="fa-regular fa-calendar-check mr-2"></i>今天為${daysMap[dayOfWeek]}，預設載入路線 ${currentRoute}`;
+
+            // 若已授權，自動變更按鈕外觀
+            if (Notification.permission === 'granted') {
+                els.notifyBtn.innerHTML = `<i class="fa-solid fa-bell mr-2"></i>提醒已啟動 (極省電模式)`;
+                els.notifyBtn.classList.replace('bg-teal-50', 'bg-emerald-100');
+                els.notifyBtn.classList.replace('text-teal-700', 'text-emerald-800');
+                // 每次打開 App 時自動更新一次鬧鐘
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.ready.then(reg => scheduleTodayAlerts(reg));
+                }
+            }
 
             renderRoute(currentRoute);
         }
 
-        // --- Core Logic ---
         function switchRoute(routeId) {
             if (currentRoute === routeId) return;
             currentRoute = routeId;
@@ -422,8 +355,6 @@
 
         function renderRoute(routeId) {
             const routeData = data[routeId];
-
-            // 1. Update Buttons Styling
             const btns = [
                 { id: 'A', el: els.btnA, colorClass: 'emerald' },
                 { id: 'B', el: els.btnB, colorClass: 'blue' },
@@ -438,23 +369,14 @@
                 }
             });
 
-            // 2. Update Titles & Description
             els.routeTitle.textContent = routeData.title;
             els.desc.textContent = routeData.description;
-            els.tags.innerHTML = routeData.tags.map(tag => 
-                `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-${routeData.themeColor}-100 text-${routeData.themeColor}-800">#${tag}</span>`
-            ).join('');
+            els.tags.innerHTML = routeData.tags.map(tag => `<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-${routeData.themeColor}-100 text-${routeData.themeColor}-800">#${tag}</span>`).join('');
 
-            // 3. Update Chart
             updateChart(routeData);
-
-            // 4. Build Timeline
             renderTimeline(routeData);
-
-            // 5. Build Summary Table
             renderTable(routeData);
 
-            // 6. 自動展開「目前時段」的卡片
             const isTodayRoute = (routeId === defaultRoute);
             const startIdx = isTodayRoute ? getCurrentStepIndex(routeData.steps) : 0;
             showDetails(routeData.steps[startIdx], startIdx);
@@ -465,7 +387,6 @@
             els.timeline.innerHTML = '';
             els.timeline.appendChild(line);
 
-            // 判斷是否為「今天的課表」，如果是才需要高亮當下時間
             const isTodayRoute = (routeData.id === defaultRoute);
             const currentStepIdx = getCurrentStepIndex(routeData.steps);
 
@@ -475,17 +396,10 @@
                 stepEl.className = `step-card relative pl-10 py-2 mb-4 cursor-pointer group`;
                 stepEl.onclick = () => showDetails(step, index);
 
-                // 動態判斷圓點顏色與外框特效
                 const dotColor = isCurrentNow ? 'bg-amber-500' : `bg-${routeData.themeColor}-500`;
                 const dotPulse = isCurrentNow ? `<div class="absolute left-[20px] top-6 w-3 h-3 rounded-full bg-amber-400 animate-ping transform -translate-x-1/2 z-0"></div>` : '';
-                
-                const cardStyle = isCurrentNow 
-                    ? `bg-amber-50 p-4 rounded-lg border-2 border-amber-400 shadow-md` 
-                    : `bg-white p-4 rounded-lg border border-gray-100 shadow-sm group-hover:border-${routeData.themeColor}-300`;
-                
-                const nowBadge = isCurrentNow 
-                    ? `<span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500 text-white shadow-sm animate-pulse"><i class="fa-solid fa-thumbtack mr-1"></i>目前時段</span>` 
-                    : '';
+                const cardStyle = isCurrentNow ? `bg-amber-50 p-4 rounded-lg border-2 border-amber-400 shadow-md` : `bg-white p-4 rounded-lg border border-gray-100 shadow-sm group-hover:border-${routeData.themeColor}-300`;
+                const nowBadge = isCurrentNow ? `<span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500 text-white shadow-sm animate-pulse"><i class="fa-solid fa-thumbtack mr-1"></i>目前時段</span>` : '';
                 const timeColor = isCurrentNow ? 'text-amber-700' : 'text-gray-400';
 
                 stepEl.innerHTML = `
@@ -508,14 +422,12 @@
         }
 
         function showDetails(step, index) {
-            // 清理並重新附上正確的光圈顏色
             const isTodayRoute = (currentRoute === defaultRoute);
             const currentStepIdx = getCurrentStepIndex(data[currentRoute].steps);
             
             document.querySelectorAll('.step-card-content').forEach((el, i) => {
                 el.classList.remove('ring-2', 'ring-emerald-400', 'ring-blue-400', 'ring-purple-400', 'ring-amber-400');
                 if (i === index) {
-                    // 如果點擊的是目前正在進行的時段，顯示琥珀色光圈
                     const isCurrentNow = isTodayRoute && (index === currentStepIdx);
                     const ringColor = isCurrentNow ? 'ring-amber-400' : `ring-${data[currentRoute].themeColor}-400`;
                     el.classList.add('ring-2', ringColor);
@@ -539,12 +451,7 @@
 
             els.summaryBody.innerHTML = routeData.steps.map((step, index) => {
                 const isCurrentNow = isTodayRoute && (index === currentStepIdx);
-                
-                // 表格列的高亮特效
-                const trClass = isCurrentNow 
-                    ? 'bg-amber-50 border-l-4 border-amber-500' 
-                    : 'hover:bg-gray-50 transition-colors border-l-4 border-transparent';
-                
+                const trClass = isCurrentNow ? 'bg-amber-50 border-l-4 border-amber-500' : 'hover:bg-gray-50 transition-colors border-l-4 border-transparent';
                 const timeDisplay = isCurrentNow
                     ? `<span class="font-bold text-amber-700">${step.time}</span> <span class="ml-1 px-1.5 py-0.5 bg-amber-500 text-white text-[10px] rounded font-bold animate-pulse">NOW</span>`
                     : step.time;
@@ -553,9 +460,7 @@
                     <tr class="${trClass}">
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${timeDisplay}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${step.color}">
-                                ${step.condition}
-                            </span>
+                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${step.color}">${step.condition}</span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${step.item}</td>
                     </tr>
@@ -565,7 +470,6 @@
 
         function updateChart(routeData) {
             const ctx = document.getElementById('radarChart').getContext('2d');
-            
             let color;
             if (routeData.id === 'A') color = '16, 185, 129';
             else if (routeData.id === 'B') color = '59, 130, 246';
@@ -595,33 +499,16 @@
                         r: {
                             angleLines: { color: '#f3f4f6' },
                             grid: { color: '#e5e7eb' },
-                            pointLabels: {
-                                font: { size: 11, family: "'Noto Sans TC', sans-serif" },
-                                color: '#6b7280'
-                            },
-                            suggestedMin: 0,
-                            suggestedMax: 100,
+                            pointLabels: { font: { size: 11, family: "'Noto Sans TC', sans-serif" }, color: '#6b7280' },
+                            suggestedMin: 0, suggestedMax: 100,
                             ticks: { display: false }
                         }
                     },
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                            titleColor: '#1f2937',
-                            bodyColor: '#4b5563',
-                            borderColor: '#e5e7eb',
-                            borderWidth: 1,
-                            padding: 10,
-                            displayColors: true,
-                            boxPadding: 4
-                        }
-                    }
+                    plugins: { legend: { display: false } }
                 }
             });
         }
 
-        // Boot
         window.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
